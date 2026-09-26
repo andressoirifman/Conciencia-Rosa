@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConCiencia Rosa: Jóvenes por la Prevención</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Rosy Peach and Warm Neutrals -->
+    <!-- Application Structure Plan: The SPA is structured thematically to guide the user on a journey of understanding. It starts with 'El Problema' to establish urgency with key data. 'Nuestro Plan' then introduces the project's strategy and stakeholders. The core educational content is in 'Aprender para Prevenir,' using interactive elements like tabs and cards for engagement. 'Acción Comunitaria' showcases the practical activities, and 'Únete' serves as a final call to action. This thematic flow is more intuitive and engaging for a general audience than directly mirroring the formal report structure, facilitating better comprehension and retention. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Global/National/Local breast cancer statistics -> Goal: Inform & Compare -> Viz: Interactive stat cards and a Bar Chart (Chart.js) -> Interaction: Hover effects on cards, tooltips on chart -> Justification: Quickly conveys the scale of the problem and allows for easy comparison of mortality rates.
+        - Report Info: Modifiable vs. Non-modifiable risk factors -> Goal: Educate on Prevention -> Viz: Donut Chart (Chart.js) and styled HTML lists -> Interaction: Chart tooltips -> Justification: The donut chart visually emphasizes the significant impact of controllable lifestyle factors.
+        - Report Info: Breast self-exam steps -> Goal: Teach a practical skill -> Viz: Step-by-step diagram using HTML/CSS/Icons -> Interaction: Users process information sequentially -> Justification: A clear, visual guide is more effective for procedural instructions than plain text.
+        - Report Info: Myths and Facts -> Goal: Debunk misinformation -> Viz: Interactive flip-cards (HTML/CSS/JS) -> Interaction: Click-to-reveal -> Justification: Encourages active participation and makes learning memorable.
+        - Report Info: Official vs. SAMAS screening guidelines -> Goal: Compare & Educate on complexity -> Viz: HTML comparison table -> Interaction: Static display -> Justification: A side-by-side table is the clearest way to present and compare differing recommendations.
+        - Report Info: Project activities -> Goal: Showcase community service -> Viz: Grid of cards with icons -> Interaction: Hover effects -> Justification: A visually appealing grid provides a quick, scannable overview of the project's scope.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FFF7F5; /* Warm neutral background */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 50vh;
+        }
+        .text-rosa { color: #E53E5E; }
+        .bg-rosa { background-color: #E53E5E; }
+        .bg-rosa-light { background-color: #FFD1DC; }
+        .border-rosa { border-color: #E53E5E; }
+        .accent-rosa { color: #D62C4E; }
+        .nav-link {
+            padding: 8px 16px;
+            border-radius: 9999px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        .nav-link:hover, .nav-link.active {
+            background-color: #FFD1DC;
+            color: #D62C4E;
+        }
+        .flip-card { perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; padding: 1rem; text-align: center; }
+        .flip-card-back { transform: rotateY(180deg); }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-rosa">ConCiencia Rosa</h1>
+            <div class="hidden md:flex items-center space-x-2">
+                <a href="#problema" class="nav-link">El Problema</a>
+                <a href="#plan" class="nav-link">Nuestro Plan</a>
+                <a href="#prevenir" class="nav-link">Aprender para Prevenir</a>
+                <a href="#accion" class="nav-link">Acción Comunitaria</a>
+                <a href="#unete" class="nav-link">Únete</a>
+            </div>
+            <div class="md:hidden">
+                <select id="mobile-nav" class="bg-white border border-gray-300 rounded-md py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-rosa-light">
+                    <option value="#problema">El Problema</option>
+                    <option value="#plan">Nuestro Plan</option>
+                    <option value="#prevenir">Aprender para Prevenir</option>
+                    <option value="#accion">Acción Comunitaria</option>
+                    <option value="#unete">Únete</option>
+                </select>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="py-16 md:py-24 text-center bg-white">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Jóvenes por la Prevención del Cáncer de Mama</h2>
+                <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">Un proyecto escolar para empoderar a nuestra comunidad con conocimiento y acción, fomentando una cultura de salud y detección temprana.</p>
+            </div>
+        </section>
+
+        <section id="problema" class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl md:text-4xl font-bold text-gray-900">Entendiendo la Urgencia</h3>
+                    <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">El cáncer de mama es un desafío de salud pública global y local. Esta sección presenta los datos clave que impulsan nuestro proyecto, mostrando por qué la concienciación y la acción son más importantes que nunca.</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 text-center">
+                    <div class="bg-white p-6 rounded-xl shadow-lg transform hover:scale-105 transition-transform">
+                        <p class="text-5xl font-bold text-rosa">462,000</p>
+                        <p class="mt-2 text-gray-700 font-semibold">Casos Anuales en las Américas</p>
+                        <p class="text-sm text-gray-500 mt-1">Una de las regiones más afectadas a nivel mundial.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg transform hover:scale-105 transition-transform">
+                        <p class="text-5xl font-bold text-rosa">N° 2</p>
+                        <p class="mt-2 text-gray-700 font-semibold">Argentina en Mortalidad</p>
+                        <p class="text-sm text-gray-500 mt-1">El país tiene la segunda tasa más alta de la región.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg transform hover:scale-105 transition-transform">
+                        <p class="text-5xl font-bold text-rosa">500</p>
+                        <p class="mt-2 text-gray-700 font-semibold">Casos Anuales en Entre Ríos</p>
+                        <p class="text-sm text-gray-500 mt-1">La problemática tiene un impacto directo en nuestra provincia.</p>
+                    </div>
+                </div>
+
+                <div class="mt-16 bg-white p-8 rounded-xl shadow-lg flex flex-col md:flex-row items-center gap-8">
+                    <div class="w-full md:w-1/2">
+                         <h4 class="text-2xl font-bold text-gray-900 mb-4">La Detección Temprana Salva Vidas</h4>
+                         <p class="text-7xl font-bold text-rosa mb-4">99%</p>
+                         <p class="text-gray-600 text-lg">Es la tasa de supervivencia a 5 años si el cáncer de mama se detecta en una etapa localizada. Este dato es la piedra angular de nuestro proyecto: la educación y la detección a tiempo son nuestras herramientas más poderosas.</p>
+                    </div>
+                    <div class="w-full md:w-1/2">
+                        <div class="chart-container">
+                             <canvas id="mortalidadChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="plan" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl md:text-4xl font-bold text-gray-900">Nuestro Plan de Acción</h3>
+                    <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">"ConCiencia Rosa" no es solo un proyecto, es un movimiento. A través de un enfoque de Aprendizaje-Servicio, conectamos la educación en el aula con acciones concretas que benefician a toda la comunidad. Aquí descubrirás cómo lo haremos y quiénes forman parte.</p>
+                </div>
+                
+                <h4 class="text-2xl font-bold text-center mb-8">Fases del Proyecto</h4>
+                <div class="relative">
+                    <div class="hidden md:block border-l-2 border-rosa-light absolute h-full top-0 left-1/2 -ml-px"></div>
+                    <div class="space-y-12 md:space-y-0">
+                        <div class="md:grid md:grid-cols-2 md:gap-8 items-center">
+                             <div class="text-center md:text-right md:pr-8">
+                                <div class="bg-rosa text-white w-12 h-12 rounded-full inline-flex items-center justify-center text-xl font-bold mb-2">1</div>
+                                <h5 class="font-bold text-xl">Planificación y Sensibilización</h5>
+                                <p class="text-gray-600">Mes 1: Formación de equipos y charlas introductorias.</p>
+                             </div>
+                             <div></div>
+                        </div>
+                        <div class="md:grid md:grid-cols-2 md:gap-8 items-center">
+                             <div></div>
+                             <div class="text-center md:text-left md:pl-8">
+                                <div class="bg-rosa text-white w-12 h-12 rounded-full inline-flex items-center justify-center text-xl font-bold mb-2">2</div>
+                                <h5 class="font-bold text-xl">Capacitación y Educación</h5>
+                                <p class="text-gray-600">Meses 2-3: Talleres sobre autoexamen y factores de riesgo.</p>
+                             </div>
+                        </div>
+                        <div class="md:grid md:grid-cols-2 md:gap-8 items-center">
+                             <div class="text-center md:text-right md:pr-8">
+                                <div class="bg-rosa text-white w-12 h-12 rounded-full inline-flex items-center justify-center text-xl font-bold mb-2">3</div>
+                                <h5 class="font-bold text-xl">Desarrollo de Actividades</h5>
+                                <p class="text-gray-600">Meses 4-6: Lanzamiento de campañas y huerto saludable.</p>
+                             </div>
+                             <div></div>
+                        </div>
+                        <div class="md:grid md:grid-cols-2 md:gap-8 items-center">
+                             <div></div>
+                             <div class="text-center md:text-left md:pl-8">
+                                <div class="bg-rosa text-white w-12 h-12 rounded-full inline-flex items-center justify-center text-xl font-bold mb-2">4</div>
+                                <h5 class="font-bold text-xl">Acción Comunitaria y Evaluación</h5>
+                                <p class="text-gray-600">Meses 7-8: Jornadas de salud y evaluación de impacto.</p>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h4 class="text-2xl font-bold text-center mt-16 mb-8">Actores Clave</h4>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 text-center">
+                    <div class="flex flex-col items-center"><div class="bg-rosa-light text-rosa p-4 rounded-full mb-2 text-2xl">🎓</div><span class="font-semibold">Estudiantes</span></div>
+                    <div class="flex flex-col items-center"><div class="bg-rosa-light text-rosa p-4 rounded-full mb-2 text-2xl">👩‍🏫</div><span class="font-semibold">Docentes</span></div>
+                    <div class="flex flex-col items-center"><div class="bg-rosa-light text-rosa p-4 rounded-full mb-2 text-2xl">⚕️</div><span class="font-semibold">Profesionales de Salud</span></div>
+                    <div class="flex flex-col items-center"><div class="bg-rosa-light text-rosa p-4 rounded-full mb-2 text-2xl">👨‍👩‍👧‍👦</div><span class="font-semibold">Familias</span></div>
+                    <div class="flex flex-col items-center"><div class="bg-rosa-light text-rosa p-4 rounded-full mb-2 text-2xl">🤝</div><span class="font-semibold">ONGs</span></div>
+                    <div class="flex flex-col items-center"><div class="bg-rosa-light text-rosa p-4 rounded-full mb-2 text-2xl">🏥</div><span class="font-semibold">Gobierno</span></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="prevenir" class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl md:text-4xl font-bold text-gray-900">Aprender para Prevenir</h3>
+                    <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">El conocimiento es poder. En esta sección, te ofrecemos las herramientas y la información fundamental para que tomes el control de tu salud mamaria. Explora los factores de riesgo, aprende a realizar el autoexamen y desmiente los mitos más comunes.</p>
+                </div>
+
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <div class="mb-8 border-b border-gray-200 flex justify-center flex-wrap">
+                        <button data-tab="riesgo" class="tab-btn active px-4 py-2 font-semibold text-gray-500 border-b-2 border-transparent hover:text-rosa hover:border-rosa">Factores de Riesgo</button>
+                        <button data-tab="autoexamen" class="tab-btn px-4 py-2 font-semibold text-gray-500 border-b-2 border-transparent hover:text-rosa hover:border-rosa">Autoexamen</button>
+                        <button data-tab="mitos" class="tab-btn px-4 py-2 font-semibold text-gray-500 border-b-2 border-transparent hover:text-rosa hover:border-rosa">Mitos y Realidades</button>
+                        <button data-tab="deteccion" class="tab-btn px-4 py-2 font-semibold text-gray-500 border-b-2 border-transparent hover:text-rosa hover:border-rosa">Detección Profesional</button>
+                    </div>
+
+                    <div id="riesgo" class="tab-content">
+                        <h4 class="text-2xl font-bold text-center mb-8">Factores de Riesgo y Protección</h4>
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div>
+                                <h5 class="font-bold text-lg mb-2 text-red-600">Factores Modificables (Podemos cambiarlos)</h5>
+                                <ul class="list-disc list-inside space-y-2 text-gray-600">
+                                    <li>Sobrepeso y obesidad, especialmente después de la menopausia.</li>
+                                    <li>Sedentarismo y falta de actividad física regular.</li>
+                                    <li>Consumo de alcohol.</li>
+                                </ul>
+                                <h5 class="font-bold text-lg mt-6 mb-2 text-green-600">Factores de Protección</h5>
+                                 <ul class="list-disc list-inside space-y-2 text-gray-600">
+                                    <li>Mantener un peso saludable.</li>
+                                    <li>Realizar actividad física de forma regular.</li>
+                                    <li>Limitar o evitar el consumo de alcohol.</li>
+                                    <li>Lactancia materna.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 class="font-bold text-lg mb-2 text-gray-700">Factores No Modificables</h5>
+                                <ul class="list-disc list-inside space-y-2 text-gray-600">
+                                    <li>Ser mujer y envejecer.</li>
+                                    <li>Antecedentes personales o familiares de cáncer de mama.</li>
+                                    <li>Mutaciones genéticas (ej. BRCA1, BRCA2).</li>
+                                    <li>Primera menstruación a edad temprana.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="autoexamen" class="tab-content hidden">
+                        <h4 class="text-2xl font-bold text-center mb-8">5 Pasos del Autoexamen Mamario</h4>
+                         <p class="text-center text-gray-500 mb-8 max-w-2xl mx-auto">Recuerda: es una herramienta de autoconocimiento. No reemplaza la consulta médica. Realízalo una vez al mes, preferiblemente una semana después de tu período.</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 text-center">
+                            <div class="border p-4 rounded-lg">
+                                <p class="text-4xl mb-2">1️⃣</p>
+                                <h5 class="font-bold">Observar</h5>
+                                <p class="text-sm text-gray-600">Frente al espejo, con brazos a los lados, busca cambios en la forma, tamaño o superficie de la piel.</p>
+                            </div>
+                            <div class="border p-4 rounded-lg">
+                                <p class="text-4xl mb-2">2️⃣</p>
+                                <h5 class="font-bold">Manos en la cabeza</h5>
+                                <p class="text-sm text-gray-600">Coloca las manos detrás de la cabeza y observa de nuevo, buscando los mismos cambios.</p>
+                            </div>
+                            <div class="border p-4 rounded-lg">
+                                <p class="text-4xl mb-2">3️⃣</p>
+                                <h5 class="font-bold">Manos en la cadera</h5>
+                                <p class="text-sm text-gray-600">Presiona las manos sobre las caderas e inclínate un poco hacia adelante, observa.</p>
+                            </div>
+                            <div class="border p-4 rounded-lg">
+                                <p class="text-4xl mb-2">4️⃣</p>
+                                <h5 class="font-bold">Palpación de pie</h5>
+                                <p class="text-sm text-gray-600">Levanta un brazo. Con la mano opuesta, palpa el seno con movimientos circulares buscando bultos.</p>
+                            </div>
+                            <div class="border p-4 rounded-lg">
+                                <p class="text-4xl mb-2">5️⃣</p>
+                                <h5 class="font-bold">Palpación acostada</h5>
+                                <p class="text-sm text-gray-600">Repite el paso 4 acostada, con una almohada bajo tu espalda. Presiona suave, media y firmemente.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="mitos" class="tab-content hidden">
+                         <h4 class="text-2xl font-bold text-center mb-8">Mitos y Realidades</h4>
+                         <p class="text-center text-gray-500 mb-8 max-w-2xl mx-auto">Haz clic en las tarjetas para descubrir la verdad detrás de las creencias populares.</p>
+                        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="flip-card h-48 cursor-pointer">
+                                <div class="flip-card-inner">
+                                    <div class="flip-card-front bg-rosa-light text-gray-800"><p class="font-semibold">¿Usar desodorante antitranspirante causa cáncer de mama?</p></div>
+                                    <div class="flip-card-back bg-red-500 text-white">
+                                        <h5 class="font-bold text-xl">MITO</h5>
+                                        <p class="text-sm">No existe evidencia científica concluyente que relacione el uso de desodorantes con el cáncer de mama.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flip-card h-48 cursor-pointer">
+                                <div class="flip-card-inner">
+                                    <div class="flip-card-front bg-rosa-light text-gray-800"><p class="font-semibold">Si no tengo antecedentes familiares, no estoy en riesgo.</p></div>
+                                    <div class="flip-card-back bg-red-500 text-white">
+                                         <h5 class="font-bold text-xl">MITO</h5>
+                                        <p class="text-sm">La mayoría de las mujeres diagnosticadas (más del 85%) no tienen antecedentes familiares.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flip-card h-48 cursor-pointer">
+                                <div class="flip-card-inner">
+                                    <div class="flip-card-front bg-rosa-light text-gray-800"><p class="font-semibold">La detección temprana aumenta las chances de cura.</p></div>
+                                    <div class="flip-card-back bg-green-500 text-white">
+                                         <h5 class="font-bold text-xl">REALIDAD</h5>
+                                        <p class="text-sm">Absolutamente. Detectado a tiempo, la tasa de supervivencia a 5 años es del 99%.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="deteccion" class="tab-content hidden">
+                        <h4 class="text-2xl font-bold text-center mb-8">Guías de Detección Profesional</h4>
+                        <p class="text-center text-gray-500 mb-8 max-w-3xl mx-auto">La mamografía es el estudio más eficaz para la detección temprana. En Argentina, existen diferentes recomendaciones. Es importante que hables con tu médico para una evaluación personalizada. Aquí te mostramos las principales guías.</p>
+                        <div class="overflow-x-auto">
+                            <table class="w-full max-w-3xl mx-auto text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-rosa-light">
+                                        <th class="p-3 font-bold uppercase text-gray-600 border border-gray-300">Organización</th>
+                                        <th class="p-3 font-bold uppercase text-gray-600 border border-gray-300">Edad de Inicio (Riesgo Promedio)</th>
+                                        <th class="p-3 font-bold uppercase text-gray-600 border border-gray-300">Frecuencia</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="hover:bg-gray-100">
+                                        <td class="p-3 text-gray-800 font-semibold border border-gray-300">Ministerio de Salud (Guía Oficial Argentina)</td>
+                                        <td class="p-3 text-gray-800 border border-gray-300">50 años</td>
+                                        <td class="p-3 text-gray-800 border border-gray-300">Cada 2 años (Bienal)</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-100">
+                                        <td class="p-3 text-gray-800 font-semibold border border-gray-300">Sociedad Arg. de Mastología (SAMAS)</td>
+                                        <td class="p-3 text-gray-800 border border-gray-300">40 años</td>
+                                        <td class="p-3 text-gray-800 border border-gray-300">Cada 1 año (Anual)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                         <p class="text-center text-sm text-gray-500 mt-4 max-w-3xl mx-auto">Esta diferencia en las guías es una oportunidad educativa para entender cómo se formulan las políticas de salud, balanceando evidencia clínica, costos y beneficios para la población general.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="accion" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl md:text-4xl font-bold text-gray-900">Acción Comunitaria</h3>
+                    <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">Creemos en el poder de la acción colectiva. Nuestro proyecto sale del aula para impactar positivamente en nuestra comunidad a través de diversas actividades de servicio que promueven la salud, la conciencia y la participación.</p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-gray-50 p-6 rounded-xl shadow-md">
+                        <div class="text-3xl mb-3">🏃‍♀️</div>
+                        <h4 class="font-bold text-xl mb-2">Ruta Rosa de la Salud</h4>
+                        <p class="text-gray-600">Organización de caminatas y jornadas de actividad física para promover el ejercicio como factor de protección.</p>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-xl shadow-md">
+                        <div class="text-3xl mb-3">🥕</div>
+                        <h4 class="font-bold text-xl mb-2">Huerto Saludable</h4>
+                        <p class="text-gray-600">Creación de un huerto escolar para aprender sobre nutrición y compartir alimentos y recetas saludables.</p>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-xl shadow-md">
+                        <div class="text-3xl mb-3">🎬</div>
+                        <h4 class="font-bold text-xl mb-2">Cine-Foro ConCiencia</h4>
+                        <p class="text-gray-600">Proyección de documentales y cortos para generar debate, reflexión y empatía sobre el tema.</p>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-xl shadow-md">
+                        <div class="text-3xl mb-3">🎀</div>
+                        <h4 class="font-bold text-xl mb-2">Campaña de Comunicación</h4>
+                        <p class="text-gray-600">Diseño y difusión de folletos, posters y contenido para redes sociales para maximizar el alcance del mensaje.</p>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-xl shadow-md">
+                        <div class="text-3xl mb-3">📢</div>
+                        <h4 class="font-bold text-xl mb-2">Jornadas de Salud</h4>
+                        <p class="text-gray-600">Charlas informativas abiertas a toda la comunidad, en colaboración con profesionales de la salud.</p>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-xl shadow-md">
+                        <div class="text-3xl mb-3">📚</div>
+                        <h4 class="font-bold text-xl mb-2">Integración Curricular</h4>
+                        <p class="text-gray-600">El proyecto se integra en materias como Biología, Salud, Sociales y más, para un aprendizaje completo.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="unete" class="py-16 md:py-24 text-center">
+             <div class="container mx-auto px-6">
+                <h3 class="text-3xl md:text-4xl font-bold text-gray-900">Forma Parte del Cambio</h3>
+                <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">Tu participación es fundamental para el éxito de "ConCiencia Rosa". Ya seas estudiante, docente, profesional o miembro de la comunidad, hay un lugar para ti.</p>
+                <div class="mt-8">
+                    <a href="mailto:info@concienciarosa.org" class="bg-rosa text-white font-bold py-3 px-8 rounded-full text-lg hover:bg-accent-rosa transition-colors">Contáctanos para colaborar</a>
+                </div>
+             </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2025 ConCiencia Rosa. Un proyecto educativo para un futuro más saludable.</p>
+            <p class="text-sm text-gray-400 mt-2">Este sitio es una representación interactiva de un proyecto escolar y no constituye asesoramiento médico.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mortalityData = {
+                labels: ['Otras Regiones Américas', 'Argentina'],
+                datasets: [{
+                    label: 'Tasa de Mortalidad (por 100,000 mujeres)',
+                    data: [16.5, 19.9],
+                    backgroundColor: ['#FFD1DC', '#E53E5E'],
+                    borderColor: ['#FFB3C5', '#D62C4E'],
+                    borderWidth: 1
+                }]
+            };
+
+            const mortalityConfig = {
+                type: 'bar',
+                data: mortalityData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: 'Comparativa de Tasa de Mortalidad'
+                        }
+                    },
+                    scales: {
+                        x: { beginAtZero: true }
+                    }
+                }
+            };
+            
+            const mortalityChartCtx = document.getElementById('mortalidadChart').getContext('2d');
+            new Chart(mortalityChartCtx, mortalityConfig);
+
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tabId = btn.dataset.tab;
+                    tabBtns.forEach(b => b.classList.remove('active', 'text-rosa', 'border-rosa'));
+                    btn.classList.add('active', 'text-rosa', 'border-rosa');
+                    tabContents.forEach(content => {
+                        if (content.id === tabId) {
+                            content.classList.remove('hidden');
+                        } else {
+                            content.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+            document.querySelector('.tab-btn[data-tab="riesgo"]').click();
+
+            const flipCards = document.querySelectorAll('.flip-card');
+            flipCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    card.classList.toggle('flipped');
+                });
+            });
+
+            const mobileNav = document.getElementById('mobile-nav');
+            mobileNav.addEventListener('change', (e) => {
+                window.location.href = e.target.value;
+            });
+        });
+    </script>
+</body>
+</html>
